@@ -36,9 +36,7 @@ class ProductCardViewModel(
         viewModelScope.launch {
             productCardInteractor.deleteItem(productCardItem)
             if (filterText == ""){
-                productCardInteractor.fetchData().collect {
-                    _uiState.value = it
-                }
+                fetchData()
             } else{
                 filterData(filterText)
             }
@@ -50,9 +48,7 @@ class ProductCardViewModel(
         viewModelScope.launch {
             productCardInteractor.changeAmount(productCardItemId, newAmount)
             if (filterText == ""){
-                productCardInteractor.fetchData().collect {
-                    _uiState.value = it
-                }
+                fetchData()
             } else{
                 filterData(filterText)
             }
