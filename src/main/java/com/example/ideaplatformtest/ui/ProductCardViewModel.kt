@@ -13,10 +13,12 @@ class ProductCardViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<List<ProductCardItem>>(emptyList())
     val uiState: StateFlow<List<ProductCardItem>> = _uiState
+    private var filterText = ""
 
     init {
         viewModelScope.launch {
             productCardInteractor.fetchData().collect {
+                filterText = ""
                 _uiState.value = it
             }
         }
@@ -33,17 +35,26 @@ class ProductCardViewModel(
     fun deleteProductCardItem(productCardItem: ProductCardItem) {
         viewModelScope.launch {
             productCardInteractor.deleteItem(productCardItem)
-            productCardInteractor.fetchData().collect {
-                _uiState.value = it
+            if (filterText == ""){
+                productCardInteractor.fetchData().collect {
+                    _uiState.value = it
+                }
+            } else{
+                filterData(filterText)
             }
+
         }
     }
 
     fun changeAmountProductCardItem(productCardItemId: Int, newAmount: Int) {
         viewModelScope.launch {
             productCardInteractor.changeAmount(productCardItemId, newAmount)
-            productCardInteractor.fetchData().collect {
-                _uiState.value = it
+            if (filterText == ""){
+                productCardInteractor.fetchData().collect {
+                    _uiState.value = it
+                }
+            } else{
+                filterData(filterText)
             }
         }
 
@@ -51,6 +62,7 @@ class ProductCardViewModel(
 
     fun filterData(name: String) {
         viewModelScope.launch {
+            filterText = name
             productCardInteractor.filteredData(name).collect {
                 _uiState.value = it
             }
